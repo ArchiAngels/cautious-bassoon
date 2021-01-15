@@ -1,0 +1,138 @@
+*{
+    margin:0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+body{
+    width:100%;
+    height:100vh;
+    background-image: linear-gradient(to right, lightcoral,cyan);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.wrap{
+    width:80%;
+    height:80%;
+    background-color: rgba(0,0,0,0.33);
+    
+}
+.wrap_tool label {
+    width: 70%;
+}
+.toolBar{
+    position: absolute;
+    width:0vw;
+    height:100vh;
+    background-color: rgba(0,0,0,0.85);
+    top:0;
+    left:0;
+    transition: width 0.5s;
+    display: flex;
+}
+.left-side{
+    /* margin-top:10%; */
+    /* margin-bottom:10%; */
+    width:90%;
+    margin-top: 10%;
+    margin-left:10%;
+    /* padding-bottom: 10%; */
+    height:80%;
+    overflow-y: scroll;
+    font-size: 1.5rem;
+    /* display: flex; */
+    
+    /* align-content: space-around; */
+    /* flex-wrap: wrap; */
+}
+.right-side{
+    height:100vh;
+    display: flex;
+    align-items: center;
+
+}
+.toolInp{
+    transform: scale(1.5);
+    margin-left: 15px;
+}
+.wrap_tool{
+    width:100%;
+    min-height:100px;
+    transform: translateX(0px);
+    color:white;
+    transition: transform 0.8s;
+    display: flex;
+    /* justify-content: center; */
+}
+.wrap_tool input,button{
+    max-height: 30px;
+}
+.wrap_tool button{
+    width:100%;
+    cursor:pointer;
+}
+.wrap_tool label:hover{
+    cursor: pointer;
+}
+.wrap_tool label:active{
+    transform: translateY(5px);
+}
+.flx-col{
+    flex-direction: column;
+}
+.connection_style{
+    margin-left:50px;
+}
+.showHideArrow{
+    /* position: absolute; */
+    width:50px;
+    height:50px;
+    background-color: #000;
+    /* right:0; */
+    margin-right:-25px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s;
+}
+.showHideArrow:hover{
+    cursor: pointer;
+    transform: translateX(10px);
+}
+.showHideArrow:active{
+    border:1px solid white;
+}
+.arrow{
+    width:10px;
+    height:10px;
+    border-top:2px solid white;
+    border-right:2px solid white;
+    transform: rotate(45deg);
+    transition: transform 0.3s;
+    
+}
+.reverseArrow{
+    transform: rotate(225deg);
+}
+.active{
+    width:30vw;
+}
+.hide{
+    transform: translateX(-1000px);
+    /* display: none; */
+}
+.errorInpDif{
+    animation: errorInp 0.15s linear 3;
+    border:2px solid red;
+    border-radius: 5px;
+}
+@keyframes errorInp{
+    0%{
+        transform: translateX(0px);
+    }
+    25%{transform: translateX(15px);}
+    50%{transform: translateX(0px);}
+    75%{transform: translateX(-15px);}
+    100%{transform: translateX(0px);}
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <div class="wrap">
+        <div id='toolBar' class="toolBar active">
+            
+            <div class="left-side">
+                <div class = 'wrap_tool'>
+                    <label for="point_a">Point A</label>
+                    <input type="text" id='point_a' class=''>
+                </div>
+                <div class = 'wrap_tool'>
+                    <label for="point_b">Point B</label>
+                    <input type="text" id='point_b' class=''>
+                </div>
+                <div class = 'wrap_tool'>
+                    <label for="visitAll">Visit all points from A to B</label>
+                    <input type="checkbox" id='visitAll' class='toolInp'>
+                </div>
+                <div class = 'wrap_tool'>
+                    <label for="mostFasterRoad">Find most faster road</label>
+                    <input type="checkbox" id='mostFasterRoad' class='toolInp'>
+                </div>
+                <div class = 'wrap_tool'>
+                    <button id='btn_findMinDis'>Start searching</button>
+                </div>
+                <div class = 'wrap_tool'>
+                    <label for="lines">Show Lines</label>
+                    <input type="checkbox" id='lines' class='toolInp'>
+                </div>
+                <div  class = 'wrap_tool'>
+                    <label for="nums">Show Nums</label>
+                    <input type="checkbox" id='nums' class='toolInp'>
+                </div>
+                <div  class = 'wrap_tool'>
+                    <label for="spawn_points" title="click here and then click on white place to create new point">Insert next point</label>
+                    <input type="checkbox" id='spawn_points' class='toolInp'>
+                </div>
+                <div  class = 'wrap_tool'>
+                    <label for="makeConn" title="click here and then click favorite point and then click another point which you want for make new connection">Make connections for selected point</label>
+                    <input type="checkbox" id='makeConn' class='toolInp'>
+                </div>
+                <div  class = 'wrap_tool flx-col'>
+                    <div id="connection_curr_elem"></div>
+                    <div id="connection_list_of_connections"></div>
+                    <div>
+                        <label for="delConnect" title = 'click here and then click any you like points which have connection whit current point'>Delete Connection</label>
+                        <input type="checkbox" id='delConnect' class='toolInp'>
+                        <label for="SaveChanges" title = 'click here for save updates'>Save</label>
+                        <input type="checkbox" id='SaveChanges' class='toolInp'>
+                    </div>
+                </div>
+                <div class = 'wrap_tool'>
+                    <button id='btn_resetToDefault'>Clear</button>
+                </div>
+                <div  class = 'wrap_tool'>
+                    <h2>Results of program:</h2>
+                    <div id="result"></div>
+                </div>
+            </div>
+            <div class="right-side">
+                <div class="showHideArrow " id='ToolBarShow'>
+                    <div class="arrow reverseArrow"></div>
+                </div>
+            </div>
+        </div>
+        <canvas id="canvas"></canvas>
+    </div>
+    
+
+    <script src="main.js"></script>
+</body>
+</html>
