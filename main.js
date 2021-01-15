@@ -15,7 +15,8 @@ show_hide_tools.addEventListener('click',()=>{
         }
         show_hide_tools.children[0].classList.toggle('reverseArrow');
 
-    }else{console.log('to fast wait')}
+    }else{//console.log('to fast wait')
+}
 
     cant_show_hide_tools_timeout = true;
 
@@ -67,13 +68,39 @@ let Connections = {
     connection_elems: document.getElementById('connection_list_of_connections'),
     deleteConnect : document.getElementById('delConnect'),
     SaveUpdates : document.getElementById('SaveChanges'),
+    ConnectInfo : document.getElementById('info_connections'),
     curr_point : null,
     OnlyAddConnections:false,
-    last_clicked_point:null
+    last_clicked_point:null,
+    showFullCommunications:function(selectedElem){
+        let arr = optionsPoints.arrWithRoadPoints;
+        for(let i = 0; i < arr.length;i++){
+            if(selectedElem){
+                if(arr[i] == this.curr_point){
+                    arr[i].ShowAllAvailbleRoads();
+                    break;
+                }
+            }else{
+                arr[i].ShowAllAvailbleRoads();
+            }
+        }
+    },
+    UpdateConnectionsInfo:function(selectedElem){
+        this.connection_elems.innerHTML = ``;
+        this.connection_list.innerHTML = `<p>Point (${Connections.curr_point.numOfPoints}) has connections:</p>`;
+            if(this.curr_point.ShowConnections().length > 0){
+                for(let i = 0; i < this.curr_point.ShowConnections().length;i++){
+                    this.connection_elems.innerHTML += `<p class = 'connection_style'> with point (${this.curr_point.ShowConnections()[i].id})</p>`;
+                }
+                // showAllRoads();
+                this.showFullCommunications(selectedElem);
+            }
+    }
 
 };
 
 function SaveConnections(){
+    //console.log('SUCS saved');
     Connections.OnlyAddConnections = false;
     Connections.curr_point = null;
     Connections.last_clicked_point = null;
@@ -96,7 +123,7 @@ let init = ()=>{
     resizeCNV();
     InputPoints.finish_point_input.value = '';
     InputPoints.start_point_input.value = '';
-    console.log('Initialized');
+    //console.log('Initialized');
 }
 init();
 
@@ -113,35 +140,38 @@ class roadPoint{
         optionsPoints.arrWithRoadPoints.push(this);
         optionsPoints.countNumOfPoint++;
         makeCircle(this.x,this.y,this.radius,this.color,this.numOfPoints);
-        if(optionsPoints.countNumOfPoint > 2 && ModifyViewPoints.showLines.checked){
-            showAllRoads();
-        }
-        // console.log(optionsPoints.arrWithRoadPoints);
+        // if(optionsPoints.countNumOfPoint > 2 && ModifyViewPoints.showLines.checked){
+        //     showAllRoads();
+        // }
+        // //console.log(optionsPoints.arrWithRoadPoints);
     }
     ItIsMe(){
-        console.log(this);
+        //console.log(this);
     }
     ShowAgainCircle(){
         makeCircle(this.x,this.y,this.radius,this.color,this.numOfPoints);
     }
     ShowConnections(){
-        // console.log(this.availablePoints);
+        // //console.log(this.availablePoints);
         return this.availablePoints
     }
     SetConnection(id){
-        console.log('Make conn',id)
-        if(id == '' && id != this.countNumOfPoint){return console.log('error ID')}
+        //console.log('Make conn',id)
+        if(id == '' && id != this.countNumOfPoint){return //console.log('set connection error ID')
+    }
         else{
             if(this.availablePoints.length == 0){
-                this.availablePoints.push({id:id,elem:optionsPoints.arrWithRoadPoints[id-1]});
+                this.availablePoints.push({id:id,elem:optionsPoints.arrWithRoadPoints[id-1]}); // add new point to current
+                optionsPoints.arrWithRoadPoints[id-1].availablePoints.push({id:this.numOfPoints,elem:this}); // add current point to new
             }else{
                 for(let i = 0; i < this.availablePoints.length;i++){
                     if(this.availablePoints[i].id == id){
                         //skip repeat elem
-                        console.log('skip repeated elem');
+                        //console.log('skip repeated elem');
                         break;
                     }else if(i == this.availablePoints.length - 1){
-                        this.availablePoints.push({id:id,elem:optionsPoints.arrWithRoadPoints[id-1]});
+                        this.availablePoints.push({id:id,elem:optionsPoints.arrWithRoadPoints[id-1]}); // add new point to current
+                        optionsPoints.arrWithRoadPoints[id-1].availablePoints.push({id:this.numOfPoints,elem:this}); // add current point to new
                     }
                 }
             }
@@ -149,14 +179,44 @@ class roadPoint{
         }
         
     }
-    DelConnection(id){
-        let arrLength = this.availablePoints.length;
-        let tempArr = [];
+    DelConnection(id2){
+        if(id2 == ''){return //console.log('delete error ID')
+    }
+        else{
+
+            let arrLength = this.availablePoints.length;
+            let connectedPoint = optionsPoints.arrWithRoadPoints[id2-1];
+            let tempArr = [];
+
         for(let i = 0; i < arrLength;i++){
-            if(this.availablePoints[i].id == id){console.log('del this')}
+            if(this.availablePoints[i].id == id2){//console.log('del this',this,' >> ',this.availablePoints[i])
+        }
             else{tempArr.push(this.availablePoints[i])}
         }
-        console.log(tempArr);
+            //console.log(tempArr);
+            this.availablePoints = tempArr;
+            //console.log(this.availablePoints);
+            tempArr = [];
+            
+        for(let j = 0; j < connectedPoint.availablePoints.length;j++){
+            if(connectedPoint.availablePoints[j].id == this.numOfPoints){
+                // //console.log('del this',connectedPoint,' >> ',this);
+                //console.log(connectedPoint.availablePoints[j],connectedPoint.availablePoints[j].id,this.numOfPoints);
+            }else{tempArr.push(connectedPoint.availablePoints[j]);}
+        }
+            connectedPoint = tempArr;
+            optionsPoints.arrWithRoadPoints[id2-1].availablePoints = tempArr;
+            //console.log(connectedPoint);
+        }
+    }
+    ShowAllAvailbleRoads(clearCanvas){
+        let arr = this.availablePoints;
+        if(clearCanvas){
+            resizeCNV();
+        }
+        for(let i = 0; i < arr.length;i++){
+            makeLine(this.x,this.y,arr[i].elem.x,arr[i].elem.y);
+        }
     }
 }
 
@@ -187,6 +247,7 @@ ChoiceYourWay.most_faster_road.addEventListener('click',()=>{
 Connections.make_connection.addEventListener('click',()=>{
     ModifyViewPoints.spawn_points.checked = false;
     Connections.deleteConnect.checked = false;
+    Connections.ConnectInfo.checked = false;
 })
 Connections.deleteConnect.addEventListener('click',()=>{
     Connections.make_connection.checked = false;
@@ -197,6 +258,12 @@ Connections.SaveUpdates.addEventListener('click',()=>{
     SaveConnections(); 
     Connections.SaveUpdates.checked = false;
     Connections.make_connection.checked = false;
+})
+Connections.ConnectInfo.addEventListener('click',()=>{
+    Connections.deleteConnect.checked = false;
+    Connections.SaveUpdates.checked = false;
+    Connections.make_connection.checked = false;
+    ModifyViewPoints.spawn_points.checked = false;
 })
 ModifyViewPoints.spawn_points.addEventListener('click',()=>{
     Connections.make_connection.checked = false;
@@ -216,59 +283,102 @@ cnv.addEventListener('click',(e)=>{
         x:e.clientX - cnv.offsetLeft,
         y:e.clientY - cnv.offsetTop
     }
-    // console.log(mouseCoors.x,mouseCoors.y);
+    // //console.log(mouseCoors.x,mouseCoors.y);
     if(ModifyViewPoints.spawn_points.checked){
-        console.log('spawn');
+        //console.log('spawn');
         new roadPoint(mouseCoors.x,mouseCoors.y,optionsPoints.colors[optionsPoints.countNumOfPoint%optionsPoints.colors.length]);
     }else if(Connections.make_connection.checked){
         if(Connections.OnlyAddConnections){
-            Connections.last_clicked_point = WhichPointClicked();
+            Connections.last_clicked_point = WhichPointClicked(mouseCoors);
         }else{
-            Connections.curr_point = WhichPointClicked();
+            Connections.curr_point = WhichPointClicked(mouseCoors);
         }
-        if(Connections.curr_point == null ){console.log('miss on point')}
+        if(Connections.curr_point == null ){//console.log('miss on point')
+    }
         else{
-            if(Connections.curr_point.isFirstConnections && !Connections.OnlyAddConnections){
+            if(!Connections.OnlyAddConnections){
                 makeSelectedPointSuperVisible(Connections.curr_point.numOfPoints);
-                Connections.curr_point.isFirstConnections = false;
+                // Connections.curr_point.isFirstConnections = false;
                 Connections.OnlyAddConnections = true;
-                Connections.connection_list.innerHTML = `<p>Point (${Connections.curr_point.numOfPoints}) has connections:</p>`;
+                Connections.UpdateConnectionsInfo();
+                
+                
             }else{
-                if(Connections.last_clicked_point == null){console.log('miss on point')}
+                if(Connections.last_clicked_point == null){//console.log('miss on point')
+            }
                 else{
                     Connections.last_clicked_point.ShowAgainCircle();
+                    
                     Connections.curr_point.SetConnection(Connections.last_clicked_point.numOfPoints);
-                    Connections.connection_elems.innerHTML += `<p class = 'connection_style'> with point (${Connections.last_clicked_point.numOfPoints})</p>`;
+                    // showAllRoads();
+                    Connections.showFullCommunications();
+                    Connections.UpdateConnectionsInfo();
                 }
                 
             }
         }
     }else if (Connections.deleteConnect.checked){
-        console.log('DELETE');
+        //console.log('DELETE');
+        if(Connections.OnlyAddConnections){
+            Connections.last_clicked_point = WhichPointClicked(mouseCoors);
+            if(Connections.last_clicked_point == null){//console.log('last click delete miss on point')
+        }
+            else{
+                Connections.curr_point.DelConnection(Connections.last_clicked_point.numOfPoints);
+                
+                Connections.UpdateConnectionsInfo();
+                Connections.SaveUpdates.click();
+            }
+        }else{
+            Connections.curr_point = WhichPointClicked(mouseCoors);
+            if(Connections.curr_point == null){//console.log('curr point delete miss on point')
+        }
+            else{
+                Connections.OnlyAddConnections = true;
+            }
+            
+        }
     }else if(Connections.SaveUpdates.checked){
-        console.log('SAVE');
+        //console.log('SAVE');
     }
     else{
-        WhichPointClicked();
-    }
-    function WhichPointClicked(){
-        let arr = optionsPoints.arrWithRoadPoints;
-        let m = mouseCoors;
-    
-        for(let i =0; i < arr.length;i++){
-            if(arr[i].x - arr[i].radius <= m.x && m.x <= arr[i].x + arr[i].radius &&
-                arr[i].y - arr[i].radius <= m.y && m.y <= arr[i].y + arr[i].radius ){
-                    console.log(arr[i],'clicked here');
-                    return arr[i];
-                }
-        }
-        return null;
+        WhichPointClicked(mouseCoors);
     }
 })
+cnv.addEventListener('mousemove',(e)=>{
+    let mouseCoors = {
+        x:e.clientX - cnv.offsetLeft,
+        y:e.clientY - cnv.offsetTop
+    };
+    if(Connections.ConnectInfo.checked == true){
+        Connections.curr_point = WhichPointClicked(mouseCoors);
+        if(Connections.curr_point == null){ //console.log('empty area');resizeCNV()
+    }
+        else{
+            makeSelectedPointSuperVisible(Connections.curr_point.numOfPoints);
+            Connections.UpdateConnectionsInfo(true);
+        }
+    }
+    else{}
+    
+})
 
+function WhichPointClicked(coors){
+    let arr = optionsPoints.arrWithRoadPoints;
+    let m = coors;
+
+    for(let i =0; i < arr.length;i++){
+        if(arr[i].x - arr[i].radius <= m.x && m.x <= arr[i].x + arr[i].radius &&
+            arr[i].y - arr[i].radius <= m.y && m.y <= arr[i].y + arr[i].radius ){
+                //console.log(arr[i],'clicked here');
+                return arr[i];
+            }
+    }
+    return null;
+}
 
 window.addEventListener('keyup',(e)=>{
-    console.log(e.target,typeof(e.key));
+    //console.log(e.target,typeof(e.key));
     let st_p = InputPoints.start_point_input;
     let f_p = InputPoints.finish_point_input;
     let max_num = optionsPoints.countNumOfPoint;
@@ -291,20 +401,20 @@ window.addEventListener('keyup',(e)=>{
             let temp = '';
             for(let i = 0; i < input.length;i++){
                 if(input[i]%2 >= 0){
-                    console.log(input[i]);
+                    //console.log(input[i]);
                     temp += input[i];
                 }else{
                     error_value_inp(e.target);
                 }
             }
             if(Number(temp) < max_num){
-                console.log(temp,max_num);
+                //console.log(temp,max_num);
                 e.target.value = temp;
             }else{
                 e.target.value = '';
                 error_value_inp(e.target);
             }
-            console.log(temp,max_num);
+            //console.log(temp,max_num);
             
         }
         function error_value_inp(elem){
@@ -332,10 +442,10 @@ function SearchMinDistance(){
 
     
 
-    console.log('POINT A::',arr[st_p]);
-    console.log('POINT B::',arr[f_p]);
+    //console.log('POINT A::',arr[st_p]);
+    //console.log('POINT B::',arr[f_p]);
 
-    console.log('x::',x,'y::',y,'dist::',getClearDist(x,y));
+    //console.log('x::',x,'y::',y,'dist::',getClearDist(x,y));
 
     function getDistanceX(x1,x2){
         return Math.max(x1,x2) - Math.min(x1,x2);
@@ -358,7 +468,7 @@ function SearchMinDistance(){
 
 
 function makeCircle(x,y,rad,color,num){
-    // console.log('make Circle',x,y,rad,color);
+    // //console.log('make Circle',x,y,rad,color);
     ctx.beginPath();
     ctx.arc(x,y,rad,0,Math.PI*2);
     ctx.fillStyle = color;
@@ -374,31 +484,38 @@ function makeCircle(x,y,rad,color,num){
     ctx.stroke();
 }
 function makeSelectedPointSuperVisible(id){
+    
+    
+    let arr = optionsPoints.arrWithRoadPoints;
+
+    ctx.beginPath();
+
+    ctx.clearRect(0,0,cnv.width,cnv.height);
+
+    showAllCircle();
+    
+    ctx.rect(0,0,cnv.width,cnv.height);
+    ctx.fillStyle = '#ffffff90';
+    ctx.fill();
+    
     if(id == null){return 0}
     else{
-        let arr = optionsPoints.arrWithRoadPoints;
-
-        ctx.beginPath();
-    
-        ctx.clearRect(0,0,cnv.width,cnv.height);
-    
-        showAllCircle();
-        
-        ctx.rect(0,0,cnv.width,cnv.height);
-        ctx.fillStyle = '#ffffff90';
-        ctx.fill();
-    
         arr[id-1].ShowAgainCircle();
-    
-        ctx.stroke();
     }
+    
+
+    ctx.stroke();
     
 }
 function makeLine(x1,y1,x2,y2){
-    // console.log('draw Line');
+    // //console.log('draw Line');
     ctx.beginPath();
     ctx.moveTo(x1,y1);
     ctx.lineTo(x2,y2);
+    // if(color){
+    //     ctx.lineWidth = 2;
+    //     ctx.strokeStyle = color;
+    // }
     ctx.stroke();
 }
 
@@ -408,23 +525,24 @@ function showAllCircle(){
         arr[i].ShowAgainCircle();
     }
 }
-function showAllRoads(){
-    let arr = optionsPoints.arrWithRoadPoints;
-    for(let i =0; i < arr.length;i++){
-        let arr_with_conn = arr[i].ShowConnections();
-        // console.log(typeof(arr_with_conn),arr_with_conn,arr_with_conn.length);
-        if(arr_with_conn.length < 1){
-            // console.log('EMPTY');
-            continue
-        }else{
-            // console.log(arr_with_conn,arr_with_conn.length);
-                for(let j = 0; j < arr_with_conn.length;j++){
-                    // console.log(j,arr_with_conn[j].elem.x,arr_with_conn[j].elem.y);
-                    makeLine(arr[i].x,arr[i].y,arr_with_conn[j].elem.x,arr_with_conn[j].elem.y);
-                }
-        }
-    }
-}
+// function showAllRoads(){
+//     let arr = optionsPoints.arrWithRoadPoints;
+//     for(let i =0; i < arr.length;i++){
+//         let arr_with_conn = arr[i].ShowConnections();
+//         // //console.log(typeof(arr_with_conn),arr_with_conn,arr_with_conn.length);
+//         if(arr_with_conn.length < 1){
+//             // //console.log('EMPTY');
+//             continue
+//         }else{
+//             // //console.log(arr_with_conn,arr_with_conn.length);
+//             for(let j = 0; j < arr_with_conn.length;j++){
+//                 // //console.log(j,arr_with_conn[j].elem.x,arr_with_conn[j].elem.y);
+//                 makeLine(arr[i].x,arr[i].y,arr_with_conn[j].elem.x,arr_with_conn[j].elem.y);
+//             }
+//         }
+        
+//     }
+// }
 function resizeCNV(){
     ctx.clearRect(0,0,cnv.width,cnv.height);
 
@@ -436,7 +554,7 @@ function resizeCNV(){
     cnv.style.background = 'white';
     showAllCircle();
     if(ModifyViewPoints.showLines.checked){
-        showAllRoads();
+        Connections.showFullCommunications();
     }
     
 }
