@@ -136,3 +136,27 @@ body{
     75%{transform: translateX(-15px);}
     100%{transform: translateX(0px);}
 }
+#result{
+    width:100%;
+    min-height:100px;
+}
+.result_output{
+    transition: 0.2s all;
+}
+.result_output:hover{
+    cursor: pointer;
+    letter-spacing: 0.4rem;
+}
+
+.box_noname{
+    position: absolute;
+    min-width:100px;
+    height:100px;
+    top:0;
+    right:0;
+    background-color: #00000075;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    color:#fff;
+}
